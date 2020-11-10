@@ -1,0 +1,38 @@
+plugins {
+    id 'org.springframework.boot' version "${springBootVersion}"
+}
+
+processResources {
+    filesMatching('*.properties') {
+        expand(project.properties)
+    }
+}
+
+bootJar {
+    print "Active profile: ${activeProfile}"
+    launchScript()
+}
+
+dependencies {
+    // faz o reload do server auto-magicamente
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+
+    implementation project(':phenolic_api')
+
+    // SpringBoot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // javax.validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    testImplementation 'junit:junit'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+}
+
+test {
+    useJUnitPlatform()
+}

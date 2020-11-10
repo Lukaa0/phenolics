@@ -1,0 +1,5 @@
+rootProject.name = 'phenolic'
+springBootVersion = '2.3.5.RELEASE'
+include 'phenolic_api'
+include 'phenolic_main'
+include 'phenolic_ui'
