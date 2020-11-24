@@ -80,8 +80,6 @@ public class PhenolicRepositoryTests {
         phenolic.setName("Testing");
         phenolic.setMolecules(molecule);
 
-
-
         phenolicRepository.save(phenolic);
         assertNotNull(phenolic);
         int id = phenolic.getId();
@@ -113,7 +111,7 @@ public class PhenolicRepositoryTests {
         assertEquals(name, "Testing");
         assertEquals(phenolic.getMolecules(), molecule);
 
-
+        //Assert that a get should return error
 
     }
 
