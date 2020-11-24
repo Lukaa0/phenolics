@@ -1,7 +1,7 @@
 package pt.ipb.phenolic.models;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Molecule {
@@ -10,8 +10,13 @@ public class Molecule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "phenolic_id", nullable = false)
+    private Phenolic phenolic;
+
+
     @ManyToMany(mappedBy = "molecules")
-    private List<Food> foods;
+    private Set<Food> foods;
 
     public Integer getId() {
         return id;
@@ -21,11 +26,12 @@ public class Molecule {
         this.id = id;
     }
 
-    public List<Food> getFoods() {
+
+    public Set<Food> getFoods() {
         return foods;
     }
 
-    public void setFoods(List<Food> foods) {
+    public void setFoods(Set<Food> foods) {
         this.foods = foods;
     }
 }

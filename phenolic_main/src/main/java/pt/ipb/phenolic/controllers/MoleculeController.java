@@ -1,8 +1,6 @@
 package pt.ipb.phenolic.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ipb.phenolic.models.Molecule;
 import pt.ipb.phenolic.repos.MoleculeRepository;
 
@@ -19,7 +17,12 @@ public class MoleculeController {
     }
 
     @GetMapping
-    public List<Molecule> index() {
+    public List<Molecule> get() {
         return moleculeRepo.findAll();
+    }
+
+    @PostMapping
+    public Molecule post(@RequestBody Molecule molecule){
+        return moleculeRepo.save(molecule);
     }
 }
