@@ -2,6 +2,7 @@ package pt.ipb.phenolic.models;
 
 import javax.persistence.*;
 import java.util.Set;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Molecule {
@@ -14,6 +15,11 @@ public class Molecule {
     @JoinColumn(name = "phenolic_id", nullable = false)
     private Phenolic phenolic;
 
+    @NotBlank
+    private String name;
+
+    @OneToOne
+    private MoleculeLambda lambda;
 
     @ManyToMany(mappedBy = "molecules")
     private Set<Food> foods;
@@ -26,6 +32,21 @@ public class Molecule {
         this.id = id;
     }
 
+    public MoleculeLambda getLambda() {
+        return lambda;
+    }
+
+    public void setLambda(MoleculeLambda lambda) {
+        this.lambda = lambda;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Set<Food> getFoods() {
         return foods;
