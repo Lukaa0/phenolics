@@ -1,9 +1,6 @@
 package pt.ipb.phenolic.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 public class MoleculeLambda {
@@ -11,14 +8,15 @@ public class MoleculeLambda {
     @Id
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Molecule molecule;
+
     @Column
     private Integer waveLength;
 
     @Column
     private Boolean shoulder;
-
-    @OneToOne
-    private Molecule molecule;
 
     public Integer getId() {
         return id;
@@ -26,6 +24,14 @@ public class MoleculeLambda {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Molecule getMolecule() {
+        return molecule;
+    }
+
+    public void setMolecule(Molecule molecule) {
+        this.molecule = molecule;
     }
 
     public Integer getWaveLength() {

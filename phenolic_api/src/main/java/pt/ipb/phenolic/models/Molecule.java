@@ -18,8 +18,8 @@ public class Molecule {
     @NotBlank
     private String name;
 
-    @OneToOne
-    private MoleculeLambda lambda;
+    @OneToMany(mappedBy = "molecule")
+    private Set<MoleculeLambda> lambdas;
 
     @ManyToMany(mappedBy = "molecules")
     private Set<Food> foods;
@@ -32,12 +32,12 @@ public class Molecule {
         this.id = id;
     }
 
-    public MoleculeLambda getLambda() {
-        return lambda;
+    public Set<MoleculeLambda> getLambdas() {
+        return lambdas;
     }
 
-    public void setLambda(MoleculeLambda lambda) {
-        this.lambda = lambda;
+    public void setLambdas(Set<MoleculeLambda> lambdas) {
+        this.lambdas = lambdas;
     }
 
     public String getName() {
