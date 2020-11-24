@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import pt.ipb.phenolic.models.MSFragment;
 
 @Repository
-public interface MSFragmentRepository extends JpaRepository<MSFragment, Integer> {
+public interface MSFragmentRepository extends JpaRepository<MSFragment, Long> {
 }

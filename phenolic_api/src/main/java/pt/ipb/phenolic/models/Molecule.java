@@ -9,7 +9,7 @@ public class Molecule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "phenolic_id", nullable = false)
@@ -18,10 +18,10 @@ public class Molecule {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "molecule")
+    @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
     private Set<Lambda> lambdas;
 
-    @OneToMany(mappedBy = "molecule")
+    @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
     private Set<MSFragment> msFragments;
 
     @ManyToMany(mappedBy = "molecules")
@@ -65,11 +65,11 @@ public class Molecule {
 
     private String reference;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

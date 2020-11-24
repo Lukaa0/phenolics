@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import pt.ipb.phenolic.models.Lambda;
 
 @Repository
-public interface LambdaRepository extends JpaRepository<Lambda, Integer> {
+public interface LambdaRepository extends JpaRepository<Lambda, Long> {
 }
