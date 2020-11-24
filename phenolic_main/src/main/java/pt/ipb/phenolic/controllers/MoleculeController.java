@@ -1,8 +1,12 @@
 package pt.ipb.phenolic.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import pt.ipb.phenolic.dtos.MoleculeRequest;
 import pt.ipb.phenolic.models.Molecule;
+import pt.ipb.phenolic.repos.LambdaRepository;
+import pt.ipb.phenolic.repos.MSFragmentRepository;
 import pt.ipb.phenolic.repos.MoleculeRepository;
 
 import java.util.List;
@@ -12,9 +16,17 @@ import java.util.List;
 public class MoleculeController {
 
     private final MoleculeRepository moleculeRepo;
+    private final LambdaRepository lambdaRepo;
+    private final MSFragmentRepository msFragmentRepo;
 
-    public MoleculeController(MoleculeRepository moleculeRepo) {
+    public MoleculeController(
+            MoleculeRepository moleculeRepo,
+            LambdaRepository lambdaRepo,
+            MSFragmentRepository msFragmentRepo
+    ) {
         this.moleculeRepo = moleculeRepo;
+        this.lambdaRepo = lambdaRepo;
+        this.msFragmentRepo = msFragmentRepo;
     }
 
     @GetMapping
@@ -31,8 +43,19 @@ public class MoleculeController {
     }
 
     @PostMapping
-    public Molecule store(@RequestBody Molecule molecule) {
-        return moleculeRepo.save(molecule);
+    @Transactional
+    public Molecule store(@RequestBody MoleculeRequest moleculeRequest) {
+        var molecule = moleculeRepo.save(moleculeRequest.toEntity());
+
+        moleculeRequest
+                .getLambdas()
+                .forEach((lambda) -> lambdaRepo.save(lambda.toEntity(molecule)));
+
+        moleculeRequest
+                .getMsFragments()
+                .forEach((msFragment -> msFragmentRepo.save(msFragment.toEntity(molecule))));
+
+        return molecule;
     }
 
     @PutMapping("/{id}")
