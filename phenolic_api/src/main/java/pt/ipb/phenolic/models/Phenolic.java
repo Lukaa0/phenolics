@@ -1,5 +1,7 @@
 package pt.ipb.phenolic.models;
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ public class Phenolic {
     @OneToMany(mappedBy = "phenolic")
     private Set<Molecule> molecules;
 
+    @NotNull
     private String name;
 
     public Integer getId() {

@@ -1,5 +1,7 @@
 package pt.ipb.phenolic.models;
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ public class Source {
     @OneToMany(mappedBy = "source")
     private Set<Phenolic> phenolics;
 
+    @NotNull
     private String name;
 
 

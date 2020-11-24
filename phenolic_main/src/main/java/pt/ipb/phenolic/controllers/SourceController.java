@@ -25,6 +25,8 @@ public class SourceController {
 
     @PostMapping
     public Source post(@RequestBody Source source) {
+        var phelonlics = source.getPhenolics();
+
         return sourceRepo.save(source);
     }
 
