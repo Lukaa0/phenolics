@@ -1,5 +1,7 @@
 package pt.ipb.phenolic.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class Lambda {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonIgnore
     private Molecule molecule;
 
     private Integer waveLength;
