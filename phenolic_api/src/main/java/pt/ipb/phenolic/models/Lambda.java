@@ -3,7 +3,7 @@ package pt.ipb.phenolic.models;
 import javax.persistence.*;
 
 @Entity
-public class MoleculeLambda {
+public class Lambda {
 
     @Id
     private Integer id;
@@ -12,10 +12,8 @@ public class MoleculeLambda {
     @JoinColumn(nullable = false)
     private Molecule molecule;
 
-    @Column
     private Integer waveLength;
 
-    @Column
     private Boolean shoulder;
 
     public Integer getId() {

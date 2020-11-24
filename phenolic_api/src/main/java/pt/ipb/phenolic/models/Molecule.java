@@ -19,7 +19,10 @@ public class Molecule {
     private String name;
 
     @OneToMany(mappedBy = "molecule")
-    private Set<MoleculeLambda> lambdas;
+    private Set<Lambda> lambdas;
+
+    @OneToMany(mappedBy = "molecule")
+    private Set<MSFragment> msFragments;
 
     @ManyToMany(mappedBy = "molecules")
     private Set<Food> foods;
@@ -32,12 +35,20 @@ public class Molecule {
         this.id = id;
     }
 
-    public Set<MoleculeLambda> getLambdas() {
+    public Set<Lambda> getLambdas() {
         return lambdas;
     }
 
-    public void setLambdas(Set<MoleculeLambda> lambdas) {
+    public void setLambdas(Set<Lambda> lambdas) {
         this.lambdas = lambdas;
+    }
+
+    public Set<MSFragment> getMsFragments() {
+        return msFragments;
+    }
+
+    public void setMsFragments(Set<MSFragment> msFragments) {
+        this.msFragments = msFragments;
     }
 
     public String getName() {
