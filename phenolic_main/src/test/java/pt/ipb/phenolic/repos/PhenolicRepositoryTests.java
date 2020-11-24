@@ -16,7 +16,7 @@ import pt.ipb.phenolic.repos.PhenolicRepository;
 
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -75,6 +75,7 @@ public class PhenolicRepositoryTests {
     @Test
     public void testUpdatePhenolic() {
         Set<Molecule> molecule = null;
+        Set<Molecule> molecule_2 = null;
         Phenolic phenolic = new Phenolic();
         phenolic.setId(0);
         phenolic.setName("Testing");
@@ -89,6 +90,13 @@ public class PhenolicRepositoryTests {
         assertEquals(id, 0);
         assertEquals(name, "Testing");
         assertEquals(phenolic.getMolecules(), molecule);
+
+        phenolic.setMolecules(molecule_2);
+        phenolicRepository.save(phenolic);
+
+        assertEquals(phenolic.getMolecules(), molecule_2);
+
+
 
     }
     @Test
@@ -107,11 +115,13 @@ public class PhenolicRepositoryTests {
         String name = phenolic.getName();
 
 
+
         assertEquals(id, 0);
         assertEquals(name, "Testing");
         assertEquals(phenolic.getMolecules(), molecule);
 
-        //Assert that a get should return error
+        phenolicRepository.delete(phenolic);
+        assertFalse(phenolicRepository.findById(phenolic.getId()).isPresent());
 
     }
 
