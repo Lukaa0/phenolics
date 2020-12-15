@@ -10,6 +10,7 @@ import pt.ipb.phenolic.repos.MSFragmentRepository;
 import pt.ipb.phenolic.repos.MoleculeRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/molecules")
@@ -45,7 +46,7 @@ public class MoleculeController {
     @PostMapping
     @Transactional
     public Molecule store(@RequestBody MoleculeRequest moleculeRequest) {
-        var molecule = moleculeRepo.save(moleculeRequest.toEntity());
+        Molecule molecule = moleculeRepo.save(moleculeRequest.toEntity());
 
         moleculeRequest
                 .getLambdas()
