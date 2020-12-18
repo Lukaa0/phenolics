@@ -1,5 +1,6 @@
 package pt.ipb.phenolic.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +13,8 @@ public class Molecule {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "phenolic_id", nullable = false)
+    @JoinColumn(name = "phenolic_id")
+    @JsonIgnore
     private Phenolic phenolic;
 
     @NotBlank
@@ -24,9 +26,7 @@ public class Molecule {
     @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
     private Set<MSFragment> msFragments;
 
-    @ManyToMany(mappedBy = "molecules")
-    private Set<Food> foods;
-
+//    @ManyToMany(mappedBy = "molecules")
     private Integer espectroUV;
 
     private Integer weight;
@@ -97,13 +97,7 @@ public class Molecule {
         this.name = name;
     }
 
-    public Set<Food> getFoods() {
-        return foods;
-    }
 
-    public void setFoods(Set<Food> foods) {
-        this.foods = foods;
-    }
 
     public Integer getEspectroUV() {
         return espectroUV;
@@ -255,5 +249,13 @@ public class Molecule {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public Phenolic getPhenolic() {
+        return phenolic;
+    }
+
+    public void setPhenolic(Phenolic phenolic) {
+        this.phenolic = phenolic;
     }
 }
