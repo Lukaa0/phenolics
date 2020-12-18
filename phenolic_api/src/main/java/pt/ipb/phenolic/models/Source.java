@@ -1,28 +1,23 @@
 package pt.ipb.phenolic.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Source {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @OneToMany(mappedBy = "source")
     private Set<Phenolic> phenolics;
 
+    @NotBlank
     private String name;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -38,5 +33,13 @@ public class Source {
 
     public void setPhenolics(Set<Phenolic> phenolics) {
         this.phenolics = phenolics;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
