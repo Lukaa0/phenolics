@@ -65,6 +65,13 @@ public class Molecule {
 
     private String reference;
 
+    public Molecule() {
+    }
+
+    public Molecule(@NotBlank String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

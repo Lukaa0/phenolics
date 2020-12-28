@@ -33,6 +33,14 @@ public class Phenolic {
     @NotBlank
     private String name;
 
+    public Phenolic() {
+    }
+
+    public Phenolic(Phenolic phenolic, @NotBlank String name) {
+        this.phenolic = phenolic;
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
