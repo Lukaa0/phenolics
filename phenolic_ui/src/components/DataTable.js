@@ -62,7 +62,7 @@ const DataTable = (props) => {
           {props.rows.map((row) => (
             <StyledTableRow key={row.id} >
                 <StyledTableCell component="th" scope="row">
-                  <NavLink to={`/${props.navTo}?name=${row.name}`}>
+                  <NavLink to={`/${props.navTo}?id=${row.id}`}>
                     {row.name}
                   </NavLink>
                 </StyledTableCell>

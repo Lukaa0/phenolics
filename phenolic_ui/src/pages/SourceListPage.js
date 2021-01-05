@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import DataTable from '../components/DataTable';
 import PageLayout from '../components/PageLayout';
+import { fetchData } from '../services/apiServices';
 
 import { NAV_LINKS } from '../constants/navLinks';
 
 const SourceListPage = () => {
+  useEffect(() => {
+    console.log(fetchData('/sources'));
+  });
+  
   const rows = [
     { id: 1, name: 'Source 1' },
     { id: 2, name: 'Source 2' },

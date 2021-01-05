@@ -5,18 +5,17 @@ import DataTable from '../components/DataTable';
 import PageLayout from '../components/PageLayout';
 
 import { NAV_LINKS } from '../constants/navLinks';
+import { fetchData } from '../services/apiServices';
 
 const useQuery = () => {
   const params = new URLSearchParams(useLocation().search);
-  
-  // TODO After integration with API we should store id and send request to API and from response get name
-  return params.get("name");
+  return params.get("id");
 };
 
 const SourceDetailPage = () => {
   const queryId = useQuery();
   useEffect(() => {
-    console.log(queryId);
+    fetchData(``);
   });
   
   const rows = [
