@@ -35,15 +35,27 @@ public class PhenolicController {
     }
 
     @GetMapping
-    public HashSet<PhenolicRequest> getPhenolics(){
+    public HashSet<PhenolicRequest> getPhenolics(@RequestParam(defaultValue = "all") String name){
         var listPhenolic = phenolicRepo.findAll();
         var listPhenolicRequest = new HashSet<PhenolicRequest>();
-        listPhenolic.forEach((phenolic) -> {
-            var converted = new PhenolicRequest();
-            converted.setId(phenolic.getId());
-            converted.setName(phenolic.getName());
-            listPhenolicRequest.add(converted);
-        });
+        if (name.equals("all")){
+            listPhenolic.forEach((phenolic) -> {
+                var converted = new PhenolicRequest();
+                converted.setId(phenolic.getId());
+                converted.setName(phenolic.getName());
+                listPhenolicRequest.add(converted);
+            });
+        }else{
+            listPhenolic.forEach((phenolic) -> {
+                if (phenolic.getName().toUpperCase().contains(name.toUpperCase())){
+                    var converted = new PhenolicRequest();
+                    converted.setId(phenolic.getId());
+                    converted.setName(phenolic.getName());
+                    listPhenolicRequest.add(converted);
+                }
+            });
+        }
+
         return listPhenolicRequest;
     }
 
@@ -176,7 +188,7 @@ public class PhenolicController {
     }
 
     @PutMapping("/{id1}/phenolics/{id2}")
-    public PhenolicRequest updatePhenolicParentPhenolic(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2) {
+    public PhenolicRequest updatePhenolicParentPhenolic(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2, @RequestParam(defaultValue = "add") String operation) {
         var phenolic1Find = phenolicRepo.findById(id1);
         var phenolic2Find = phenolicRepo.findById(id2);
         var phenolicRequestReturn = new PhenolicRequest();
@@ -184,43 +196,67 @@ public class PhenolicController {
         if (phenolic1Find.isPresent() && phenolic2Find.isPresent() && !id1.equals(id2)) {
             var phenolic1 = phenolic1Find.get();
             var phenolic2 = phenolic2Find.get();
-            if (phenolic2.getSource() == null && phenolic2.getPhenolic() == null){
-                // Need to verify if the phenolic2 that will be the son of phenolic1 is not parent of phenolic1
-                phenolic2.setPhenolic(phenolic1);
-                phenolicRepo.save(phenolic2);
+            if (operation.equals("add")){
+                if (phenolic2.getSource() == null && phenolic2.getPhenolic() == null){
+                    // Need to verify if the phenolic2 that will be the son of phenolic1 is not parent of phenolic1
+                    phenolic2.setPhenolic(phenolic1);
+                    phenolicRepo.save(phenolic2);
+                }
+                phenolicRequestReturn.setId(phenolic1.getId());
+                phenolicRequestReturn.setName(phenolic1.getName());
+                var children = new Relative("phenolic");
+                var setValue = new HashSet<Value>();
+                var value = new Value(phenolic2.getId(),phenolic2.getName());
+                setValue.add(value);
+                children.setValues(setValue);
+                phenolicRequestReturn.setChildren(children);
+            } else if (operation.equals("remove")){
+                if (phenolic2.getPhenolic() != null){
+                    if (phenolic2.getPhenolic().getId().equals(phenolic1.getId())){
+                        phenolic2.setPhenolic(null);
+                        phenolicRepo.save(phenolic2);
+                        phenolicRequestReturn.setId(phenolic1.getId());
+                        phenolicRequestReturn.setName(phenolic1.getName());
+                    }
+                }
             }
-            phenolicRequestReturn.setId(phenolic1.getId());
-            phenolicRequestReturn.setName(phenolic1.getName());
-            var children = new Relative("phenolic");
-            var setValue = new HashSet<Value>();
-            var value = new Value(phenolic2.getId(),phenolic2.getName());
-            setValue.add(value);
-            children.setValues(setValue);
-            phenolicRequestReturn.setChildren(children);
         }
         return phenolicRequestReturn;
     }
 
     @PutMapping("/{id1}/molecules/{id2}")
-    public PhenolicRequest updatePhenolicParentMolecule(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2) {
+    public PhenolicRequest updatePhenolicParentMolecule(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2, @RequestParam(defaultValue = "add") String operation) {
         var phenolicFind = phenolicRepo.findById(id1);
         var moleculeFind = moleculeRepo.findById(id2);
         var phenolicRequestReturn = new PhenolicRequest();
         if (phenolicFind.isPresent() && moleculeFind.isPresent()) {
             var phenolic = phenolicFind.get();
             var molecule = moleculeFind.get();
-            if (molecule.getPhenolic() == null){
-                molecule.setPhenolic(phenolic);
-                moleculeRepo.save(molecule);
-                phenolicRequestReturn.setId(phenolic.getId());
-                phenolicRequestReturn.setName(phenolic.getName());
-                var children = new Relative("phenolic");
-                var setValue = new HashSet<Value>();
-                var value = new Value(molecule.getId(),molecule.getName());
-                setValue.add(value);
-                children.setValues(setValue);
-                phenolicRequestReturn.setChildren(children);
+            if (operation.equals("add")){
+                if (molecule.getPhenolic() == null){
+                    molecule.setPhenolic(phenolic);
+                    moleculeRepo.save(molecule);
+                    phenolicRequestReturn.setId(phenolic.getId());
+                    phenolicRequestReturn.setName(phenolic.getName());
+                    var children = new Relative("phenolic");
+                    var setValue = new HashSet<Value>();
+                    var value = new Value(molecule.getId(),molecule.getName());
+                    setValue.add(value);
+                    children.setValues(setValue);
+                    phenolicRequestReturn.setChildren(children);
+                }
+            } else if (operation.equals("remove")){
+                if (molecule.getPhenolic() != null){
+                    if (molecule.getPhenolic().getId().equals(phenolic.getId())){
+                        molecule.setPhenolic(null);
+                        moleculeRepo.save(molecule);
+                        phenolicRequestReturn.setId(phenolic.getId());
+                        phenolicRequestReturn.setName(phenolic.getName());
+                    }
+                }
             }
+
+
         }
         return phenolicRequestReturn;
     }

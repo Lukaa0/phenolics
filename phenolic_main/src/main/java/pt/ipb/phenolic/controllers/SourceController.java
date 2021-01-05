@@ -11,6 +11,7 @@ import pt.ipb.phenolic.models.Value;
 import pt.ipb.phenolic.repos.PhenolicRepository;
 import pt.ipb.phenolic.repos.SourceRepository;
 import java.util.HashSet;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/sources")
@@ -28,15 +29,28 @@ public class SourceController {
     }
 
     @GetMapping
-    public HashSet<SourceRequest> getSources(){
+    public HashSet<SourceRequest> getSources(@RequestParam(defaultValue = "all") String name){
         var listSources = sourceRepo.findAll();
         var listSourceRequest = new HashSet<SourceRequest>();
-        listSources.forEach((source) -> {
-            var converted = new SourceRequest();
-            converted.setId(source.getId());
-            converted.setName(source.getName());
-            listSourceRequest.add(converted);
-        });
+
+        if (name.equals("all")){
+            listSources.forEach((source) -> {
+                var converted = new SourceRequest();
+                converted.setId(source.getId());
+                converted.setName(source.getName());
+                listSourceRequest.add(converted);
+            });
+        }else {
+            listSources.forEach((source) -> {
+                if(source.getName().toUpperCase().contains(name.toUpperCase())){
+                    var converted = new SourceRequest();
+                    converted.setId(source.getId());
+                    converted.setName(source.getName());
+                    listSourceRequest.add(converted);
+                }
+            });
+        }
+
         return listSourceRequest;
     }
 
@@ -106,24 +120,36 @@ public class SourceController {
     }
 
     @PutMapping("/{id1}/phenolics/{id2}")
-    public SourceRequest updateSourceParentPhenolic(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2) {
+    public SourceRequest updateSourceParentPhenolic(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2, @RequestParam(defaultValue = "add") String operation) {
         var sourceFind = sourceRepo.findById(id1);
         var phenolicFind = phenolicRepo.findById(id2);
         var sourceRequestReturn = new SourceRequest();
         if (sourceFind.isPresent() && phenolicFind.isPresent()) {
             var source = sourceFind.get();
             var phenolic = phenolicFind.get();
-            if (phenolic.getSource() == null && phenolic.getPhenolic() == null){
-                phenolic.setSource(source);
-                phenolicRepo.save(phenolic);
-                sourceRequestReturn.setId(source.getId());
-                sourceRequestReturn.setName(source.getName());
-                var children = new Relative("phenolic");
-                var setValue = new HashSet<Value>();
-                var value = new Value(phenolic.getId(),phenolic.getName());
-                setValue.add(value);
-                children.setValues(setValue);
-                sourceRequestReturn.setChildren(children);
+            if (operation.equals("add")){
+                if (phenolic.getSource() == null && phenolic.getPhenolic() == null){
+                    phenolic.setSource(source);
+                    phenolicRepo.save(phenolic);
+                    sourceRequestReturn.setId(source.getId());
+                    sourceRequestReturn.setName(source.getName());
+                    var children = new Relative("phenolic");
+                    var setValue = new HashSet<Value>();
+                    var value = new Value(phenolic.getId(),phenolic.getName());
+                    setValue.add(value);
+                    children.setValues(setValue);
+                    sourceRequestReturn.setChildren(children);
+                }
+            }
+            else if (operation.equals("remove")){
+                if (phenolic.getSource() != null){
+                    if (phenolic.getSource().getId().equals(source.getId())){
+                        phenolic.setSource(null);
+                        phenolicRepo.save(phenolic);
+                        sourceRequestReturn.setId(source.getId());
+                        sourceRequestReturn.setName(source.getName());
+                    }
+                }
             }
         }
         return sourceRequestReturn;

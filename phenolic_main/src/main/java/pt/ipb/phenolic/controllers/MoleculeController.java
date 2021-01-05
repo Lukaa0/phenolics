@@ -34,15 +34,27 @@ public class MoleculeController {
     }
 
     @GetMapping
-    public HashSet<MoleculeRequest> getMolecules(){
+    public HashSet<MoleculeRequest> getMolecules(@RequestParam(defaultValue = "all") String name){
         var listMolecule = moleculeRepo.findAll();
         var listMoleculeRequest = new HashSet<MoleculeRequest>();
-        listMolecule.forEach((molecule) -> {
-            var converted = new MoleculeRequest();
-            converted.setId(molecule.getId());
-            converted.setName(molecule.getName());
-            listMoleculeRequest.add(converted);
-        });
+        if (name.equals("all")){
+            listMolecule.forEach((molecule) -> {
+                var converted = new MoleculeRequest();
+                converted.setId(molecule.getId());
+                converted.setName(molecule.getName());
+                listMoleculeRequest.add(converted);
+            });
+        }else{
+            listMolecule.forEach((molecule) -> {
+                if (molecule.getName().toUpperCase().contains(name.toUpperCase())) {
+                    var converted = new MoleculeRequest();
+                    converted.setId(molecule.getId());
+                    converted.setName(molecule.getName());
+                    listMoleculeRequest.add(converted);
+                }
+            });
+        }
+
         return listMoleculeRequest;
     }
 
@@ -172,6 +184,7 @@ public class MoleculeController {
     }
 
 
+
     @PutMapping("/{id}")
     public MoleculeRequest updateMolecule(@PathVariable Long id, @RequestBody MoleculeRequest moleculeRequest) {
         var moleculeFind = moleculeRepo.findById(id);
@@ -179,12 +192,76 @@ public class MoleculeController {
         if (moleculeFind.isPresent()) {
             var molecule = moleculeFind.get();
             molecule.setName(moleculeRequest.getName());
+            molecule.setName(moleculeRequest.getName());
+            molecule.setAducts(moleculeRequest.getAducts());
+            molecule.setEquipment(moleculeRequest.getEquipment());
+            molecule.setEspectroUV(moleculeRequest.getEspectroUV());
+            molecule.setExactHighResolution(moleculeRequest.getExactHighResolution());
+            molecule.setIonizationMethodology(moleculeRequest.getIonizationMethodology());
+            molecule.setMethodology(moleculeRequest.getMethodology());
+            molecule.setWeight(moleculeRequest.getWeight());
+            molecule.setIonMPlus(moleculeRequest.getIonMPlus());
+            molecule.setPseudoMHMinus(moleculeRequest.getPseudoMHMinus());
+            molecule.setPseudoMHPlus(moleculeRequest.getPseudoMHPlus());
+            molecule.setPseudoTwoMHMinus(moleculeRequest.getPseudoTwoMHMinus());
+            molecule.setPseudoTwoMHPlus(moleculeRequest.getPseudoTwoMHPlus());
+            molecule.setMultiChargedProductsMHThreeMinus(moleculeRequest.getMultiChargedProductsMHThreeMinus());
+            molecule.setMultiChargedProductsMHTwoMinus(moleculeRequest.getMultiChargedProductsMHTwoMinus());
+            molecule.setVariety(moleculeRequest.getVariety());
+            molecule.setSampleOrigin(moleculeRequest.getSampleOrigin());
+            molecule.setSeasonOfCollection(moleculeRequest.getSeasonOfCollection());
+            molecule.setPlantPart(moleculeRequest.getPlantPart());
+            molecule.setReference(moleculeRequest.getReference());
             var moleculeResponse = moleculeRepo.save(molecule);
             moleculeRequestReturn.setId(moleculeResponse.getId());
             moleculeRequestReturn.setName(moleculeResponse.getName());
         }
         return moleculeRequestReturn;
     }
+
+
+    @PutMapping("/{id1}/lambdas/{id2}")
+    @Transactional
+    public MoleculeRequest removeLambda(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2){
+        var moleculeFind = moleculeRepo.findById(id1);
+        var lambdaFind = lambdaRepo.findById(id2);
+        var moleculeRequestReturn = new MoleculeRequest();
+        if (moleculeFind.isPresent() && lambdaFind.isPresent()) {
+            var molecule = moleculeFind.get();
+            var lamba = lambdaFind.get();
+            if (lamba.getMolecule() != null){
+                if (lamba.getMolecule().getId().equals(molecule.getId())){
+                    lambdaRepo.deleteById(id2);
+                    moleculeRequestReturn.setId(molecule.getId());
+                    moleculeRequestReturn.setName(molecule.getName());
+                }
+
+            }
+        }
+        return moleculeRequestReturn;
+    }
+
+
+    @PutMapping("/{id1}/msfragments/{id2}")
+    @Transactional
+    public MoleculeRequest removeMsfregment(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2){
+        var moleculeFind = moleculeRepo.findById(id1);
+        var msfragmentFind = msFragmentRepo.findById(id2);
+        var moleculeRequestReturn = new MoleculeRequest();
+        if (moleculeFind.isPresent() && msfragmentFind.isPresent()) {
+            var molecule = moleculeFind.get();
+            var msfragment = msfragmentFind.get();
+            if (msfragment.getMolecule() != null){
+                if (msfragment.getMolecule().getId().equals(molecule.getId())){
+                    msFragmentRepo.deleteById(id2);
+                    moleculeRequestReturn.setId(molecule.getId());
+                    moleculeRequestReturn.setName(molecule.getName());
+                }
+            }
+        }
+        return moleculeRequestReturn;
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity destroy(@PathVariable Long id) {
