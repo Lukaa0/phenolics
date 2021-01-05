@@ -1,32 +1,26 @@
-package pt.ipb.phenolic.models;
+package pt.ipb.phenolic.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import pt.ipb.phenolic.models.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 import java.util.Set;
-import javax.validation.constraints.NotBlank;
 
-@Entity
-public class Molecule {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class MoleculeRequest {
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "phenolic_id")
-    @JsonIgnore
-    private Phenolic phenolic;
-
-    @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
+    private Relative parent;
+
+    private Set<Relative> children;
+
     private Set<Lambda> lambdas;
 
-    @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
     private Set<MSFragment> msFragments;
 
-//    @ManyToMany(mappedBy = "molecules")
     private Integer espectroUV;
 
     private Integer weight;
@@ -73,6 +67,14 @@ public class Molecule {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Set<Lambda> getLambdas() {
         return lambdas;
     }
@@ -89,15 +91,21 @@ public class Molecule {
         this.msFragments = msFragments;
     }
 
-    public String getName() {
-        return name;
+    public Relative getParent() {
+        return parent;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setParent(Relative parent) {
+        this.parent = parent;
     }
 
+    public Set<Relative> getChildren() {
+        return children;
+    }
 
+    public void setChildren(Set<Relative> children) {
+        this.children = children;
+    }
 
     public Integer getEspectroUV() {
         return espectroUV;
@@ -251,11 +259,54 @@ public class Molecule {
         this.reference = reference;
     }
 
-    public Phenolic getPhenolic() {
-        return phenolic;
+    public Molecule toEntity(Phenolic phenolic) {
+        var molecule = new Molecule();
+        molecule.setPhenolic(phenolic);
+        molecule.setName(this.name);
+        molecule.setAducts(this.aducts);
+        molecule.setEquipment(this.equipment);
+        molecule.setEspectroUV(this.espectroUV);
+        molecule.setExactHighResolution(this.exactHighResolution);
+        molecule.setIonizationMethodology(this.ionizationMethodology);
+        molecule.setIonMPlus(this.ionMPlus);
+        molecule.setMethodology(this.methodology);
+        molecule.setMultiChargedProductsMHThreeMinus(this.multiChargedProductsMHThreeMinus);
+        molecule.setMultiChargedProductsMHTwoMinus(this.multiChargedProductsMHTwoMinus);
+        molecule.setPlantPart(this.plantPart);
+        molecule.setPseudoMHMinus(this.pseudoMHMinus);
+        molecule.setPseudoMHPlus(this.pseudoMHPlus);
+        molecule.setPseudoTwoMHMinus(this.pseudoTwoMHMinus);
+        molecule.setPseudoTwoMHPlus(this.pseudoTwoMHPlus);
+        molecule.setReference(this.reference);
+        molecule.setSampleOrigin(this.sampleOrigin);
+        molecule.setSeasonOfCollection(this.seasonOfCollection);
+        molecule.setVariety(this.variety);
+        molecule.setWeight(this.weight);
+        return molecule;
     }
 
-    public void setPhenolic(Phenolic phenolic) {
-        this.phenolic = phenolic;
+    public Molecule toEntity() {
+        var molecule = new Molecule();
+        molecule.setName(this.name);
+        molecule.setAducts(this.aducts);
+        molecule.setEquipment(this.equipment);
+        molecule.setEspectroUV(this.espectroUV);
+        molecule.setExactHighResolution(this.exactHighResolution);
+        molecule.setIonizationMethodology(this.ionizationMethodology);
+        molecule.setIonMPlus(this.ionMPlus);
+        molecule.setMethodology(this.methodology);
+        molecule.setMultiChargedProductsMHThreeMinus(this.multiChargedProductsMHThreeMinus);
+        molecule.setMultiChargedProductsMHTwoMinus(this.multiChargedProductsMHTwoMinus);
+        molecule.setPlantPart(this.plantPart);
+        molecule.setPseudoMHMinus(this.pseudoMHMinus);
+        molecule.setPseudoMHPlus(this.pseudoMHPlus);
+        molecule.setPseudoTwoMHMinus(this.pseudoTwoMHMinus);
+        molecule.setPseudoTwoMHPlus(this.pseudoTwoMHPlus);
+        molecule.setReference(this.reference);
+        molecule.setSampleOrigin(this.sampleOrigin);
+        molecule.setSeasonOfCollection(this.seasonOfCollection);
+        molecule.setVariety(this.variety);
+        molecule.setWeight(this.weight);
+        return molecule;
     }
 }
