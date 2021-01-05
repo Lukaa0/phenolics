@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import pt.ipb.phenolic.PhenolicApplication;
 import pt.ipb.phenolic.models.Phenolic;
 import pt.ipb.phenolic.models.Source;
 
@@ -16,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
-//@SpringBootTest(classes = {PhenolicApplication.class})
+@SpringBootTest(classes = {PhenolicApplication.class})
 
 @DataJpaTest
 
@@ -29,14 +31,14 @@ public class SourceRepositoryTests {
     @Test
     public void TestCreateSource(){
         Source source = new Source();
-        source.setId(0);
+        source.setId((long)0);
         source.setName("Testing");
         Set<Phenolic> phenolic=null;
         source.setPhenolics(phenolic);
         sourceRepository.save(source);
         assertNotNull(source);
 
-        int id = source.getId();
+        long id = source.getId();
         String name = source.getName();
 
         assertEquals(id, 0);
@@ -53,14 +55,14 @@ public class SourceRepositoryTests {
     @Test
     public void TestReadSource(){
         Source source = new Source();
-        source.setId(0);
+        source.setId((long)0);
         source.setName("Testing");
         Set<Phenolic> phenolic=null;
         source.setPhenolics(phenolic);
         sourceRepository.save(source);
         assertNotNull(source);
 
-        int id = source.getId();
+        long id = source.getId();
         String name = source.getName();
 
         assertEquals(id, 0);
@@ -72,7 +74,7 @@ public class SourceRepositoryTests {
     @Test
     public void TestUpdateSource(){
         Source source = new Source();
-        source.setId(0);
+        source.setId((long)0);
         source.setName("Testing");
         Set<Phenolic> phenolic=null;
         Set<Phenolic> phenolic_2=null;
@@ -81,7 +83,7 @@ public class SourceRepositoryTests {
         sourceRepository.save(source);
         assertNotNull(source);
 
-        int id = source.getId();
+        long id = source.getId();
         String name = source.getName();
 
         assertEquals(id, 0);
@@ -103,7 +105,7 @@ public class SourceRepositoryTests {
     public void TestDeleteSource(){
 
         Source source = new Source();
-        source.setId(0);
+        source.setId((long)0);
         source.setName("Testing");
         Set<Phenolic> phenolic=null;
         Set<Phenolic> phenolic_2=null;
@@ -112,7 +114,7 @@ public class SourceRepositoryTests {
         sourceRepository.save(source);
         assertNotNull(source);
 
-        int id = source.getId();
+        long id = source.getId();
         String name = source.getName();
 
         assertEquals(id, 0);
