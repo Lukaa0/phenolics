@@ -1,45 +1,176 @@
 package pt.ipb.phenolic.controllers;
 
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import pt.ipb.phenolic.models.Phenolic;
-import pt.ipb.phenolic.models.Source;
+import pt.ipb.phenolic.dtos.PhenolicRequest;
+import pt.ipb.phenolic.dtos.SourceRequest;
+import pt.ipb.phenolic.models.Relative;
+import pt.ipb.phenolic.models.Value;
+import pt.ipb.phenolic.repos.PhenolicRepository;
 import pt.ipb.phenolic.repos.SourceRepository;
-
-import java.util.List;
-
+import java.util.HashSet;
+import java.util.Locale;
 
 @RestController
-@RequestMapping("/source")
+@RequestMapping("/sources")
 public class SourceController {
-    private final SourceRepository sourceRepo;
 
-    public SourceController(SourceRepository sourceRepo) {
+    private final SourceRepository sourceRepo;
+    private final PhenolicRepository phenolicRepo;
+
+    public SourceController(
+            SourceRepository sourceRepo,
+            PhenolicRepository phenolicRepo
+    ) {
         this.sourceRepo = sourceRepo;
+        this.phenolicRepo = phenolicRepo;
     }
 
     @GetMapping
-    public List<Source> get() {
-        return sourceRepo.findAll();
+    public HashSet<SourceRequest> getSources(@RequestParam(defaultValue = "all") String name){
+        var listSources = sourceRepo.findAll();
+        var listSourceRequest = new HashSet<SourceRequest>();
+
+        if (name.equals("all")){
+            listSources.forEach((source) -> {
+                var converted = new SourceRequest();
+                converted.setId(source.getId());
+                converted.setName(source.getName());
+                listSourceRequest.add(converted);
+            });
+        }else {
+            listSources.forEach((source) -> {
+                if(source.getName().toUpperCase().contains(name.toUpperCase())){
+                    var converted = new SourceRequest();
+                    converted.setId(source.getId());
+                    converted.setName(source.getName());
+                    listSourceRequest.add(converted);
+                }
+            });
+        }
+
+        return listSourceRequest;
+    }
+
+
+    @GetMapping("/{id}")
+    public SourceRequest showSource(@PathVariable Long id) {
+        var sourceFind = sourceRepo.findById(id);
+        var sourceRequest = new SourceRequest();
+        if (sourceFind.isPresent()){
+            var source = sourceFind.get();
+            sourceRequest.setId(source.getId());
+            sourceRequest.setName(source.getName());
+            if (!source.getPhenolics().isEmpty()){
+                var children = new Relative("phenolic");
+                var values = new HashSet<Value>();
+                source.getPhenolics().forEach((phenolic -> {
+                    values.add(new Value(phenolic.getId(),phenolic.getName()));
+                }));
+                children.setValues(values);
+                sourceRequest.setChildren(children);
+            }
+        }
+        return sourceRequest;
     }
 
     @PostMapping
-    public Source post(@RequestBody Source source) {
-        var phelonlics = source.getPhenolics();
-
-        return sourceRepo.save(source);
+    public SourceRequest storeSource(@RequestBody SourceRequest sourceRequest) {
+        var source = sourceRepo.save(sourceRequest.toEntity());
+        var sourceRequestReturn = new SourceRequest();
+        sourceRequestReturn.setId(source.getId());
+        sourceRequestReturn.setName(source.getName());
+        return sourceRequestReturn;
     }
 
-    @PutMapping("{id}")
-    public Source put(@PathVariable Integer id,
-                      @RequestBody Source source) {
-        return sourceRepo.save(source);
+    @PostMapping("/{id}/phenolics")
+    @Transactional
+    public PhenolicRequest storeAndLinkPhenolic(@PathVariable Long id, @RequestBody PhenolicRequest phenolicRequest) {
+        var sourceFind = sourceRepo.findById(id);
+        var phenolicRequestReturn = new PhenolicRequest();
+        if (sourceFind.isPresent()) {
+            var source = sourceFind.get();
+            var phenolic = phenolicRepo.save(phenolicRequest.toEntity(source));
+            phenolicRequestReturn.setId(source.getId());
+            phenolicRequestReturn.setName(source.getName());
+            var children = new Relative("phenolic");
+            var setValue = new HashSet<Value>();
+            var value = new Value(phenolic.getId(),phenolic.getName());
+            setValue.add(value);
+            children.setValues(setValue);
+            phenolicRequestReturn.setChildren(children);
+        }
+        return phenolicRequestReturn;
     }
 
-    @DeleteMapping("{id}")
-    public void delete(@PathVariable Integer id) {
-        sourceRepo.deleteById(id);
+    @PutMapping("/{id}")
+    public SourceRequest updateSource(@PathVariable Long id, @RequestBody SourceRequest sourceRequest) {
+        var sourceFind = sourceRepo.findById(id);
+        var sourceRequestReturn = new SourceRequest();
+        if (sourceFind.isPresent()) {
+            var source = sourceFind.get();
+            source.setName(sourceRequest.getName());
+            var sourceResponse = sourceRepo.save(source);
+            sourceRequestReturn.setId(sourceResponse.getId());
+            sourceRequestReturn.setName(sourceResponse.getName());
+        }
+        return sourceRequestReturn;
+    }
+
+    @PutMapping("/{id1}/phenolics/{id2}")
+    public SourceRequest updateSourceParentPhenolic(@PathVariable("id1") Long id1,@PathVariable("id2") Long id2, @RequestParam(defaultValue = "add") String operation) {
+        var sourceFind = sourceRepo.findById(id1);
+        var phenolicFind = phenolicRepo.findById(id2);
+        var sourceRequestReturn = new SourceRequest();
+        if (sourceFind.isPresent() && phenolicFind.isPresent()) {
+            var source = sourceFind.get();
+            var phenolic = phenolicFind.get();
+            if (operation.equals("add")){
+                if (phenolic.getSource() == null && phenolic.getPhenolic() == null){
+                    phenolic.setSource(source);
+                    phenolicRepo.save(phenolic);
+                    sourceRequestReturn.setId(source.getId());
+                    sourceRequestReturn.setName(source.getName());
+                    var children = new Relative("phenolic");
+                    var setValue = new HashSet<Value>();
+                    var value = new Value(phenolic.getId(),phenolic.getName());
+                    setValue.add(value);
+                    children.setValues(setValue);
+                    sourceRequestReturn.setChildren(children);
+                }
+            }
+            else if (operation.equals("remove")){
+                if (phenolic.getSource() != null){
+                    if (phenolic.getSource().getId().equals(source.getId())){
+                        phenolic.setSource(null);
+                        phenolicRepo.save(phenolic);
+                        sourceRequestReturn.setId(source.getId());
+                        sourceRequestReturn.setName(source.getName());
+                    }
+                }
+            }
+        }
+        return sourceRequestReturn;
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity destroy(@PathVariable Long id) {
+        var sourceFind = sourceRepo.findById(id);
+        if (sourceFind.isPresent()){
+            var source = sourceFind.get();
+            if (!source.getPhenolics().isEmpty()){
+                source.getPhenolics().forEach((phenolic -> {
+                    phenolic.setSource(null);
+                    phenolicRepo.save(phenolic);
+                }));
+            }
+            sourceRepo.deleteById(id);
+            return new ResponseEntity("Success", HttpStatus.ACCEPTED);
+        }else{
+            return new ResponseEntity("Fail", HttpStatus.NO_CONTENT);
+        }
+    }
 }
