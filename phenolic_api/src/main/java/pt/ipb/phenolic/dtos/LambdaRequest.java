@@ -37,7 +37,7 @@ public class LambdaRequest {
     }
 
     public Lambda toEntity(Molecule molecule) {
-        //Lambda lambda = new Lambda();
+
         var lambda = new Lambda();
         lambda.setMolecule(molecule);
         lambda.setShoulder(this.shoulder);

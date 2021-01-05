@@ -25,7 +25,7 @@ subprojects {
     ext {
         activeProfile = project.hasProperty('production') ? 'production' : 'development'
         driverClassName = 'org.h2.Driver'
-        ///*
+
         url = phenolic_db_url
         jdbcProperties = [
                 driverClassName: driverClassName,
@@ -34,6 +34,6 @@ subprojects {
                 url            : url,
                 maximumPoolSize: 10
         ]
-        //*/
+
     }
 }
