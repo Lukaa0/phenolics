@@ -4,7 +4,8 @@ plugins {
 
 allprojects {
     group = 'pt.ipb'
-    version = "${version}"
+    version = '1.0.0'
+
 }
 
 subprojects {
@@ -22,6 +23,17 @@ subprojects {
     }
 
     ext {
-        activeProfile = project.hasProperty('prod') ? 'production' : 'development'
+        activeProfile = project.hasProperty('production') ? 'production' : 'development'
+        driverClassName = 'org.h2.Driver'
+
+        url = phenolic_db_url
+        jdbcProperties = [
+                driverClassName: driverClassName,
+                username       : 'phenolic',
+                password       : '',
+                url            : url,
+                maximumPoolSize: 10
+        ]
+
     }
 }
