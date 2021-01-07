@@ -59,15 +59,23 @@ const DataTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.rows.map((row) => (
-            <StyledTableRow key={row.id} >
-                <StyledTableCell component="th" scope="row">
-                  <NavLink to={`/${props.navTo}?id=${row.id}`}>
-                    {row.name}
-                  </NavLink>
-                </StyledTableCell>
+          {props.rows.length
+            ? props.rows.map((row) => (
+              <StyledTableRow key={row.id} >
+                  <StyledTableCell component="th" scope="row">
+                    <NavLink to={`/${props.navTo}?id=${row.id}`}>
+                      {row.name}
+                    </NavLink>
+                  </StyledTableCell>
+              </StyledTableRow>
+            ))
+            :
+            <StyledTableRow>
+              <StyledTableCell component="th" scope="row">
+                  No data available
+              </StyledTableCell>
             </StyledTableRow>
-          ))}
+          }
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,35 +1,33 @@
-import React, { useEffect } from 'react';
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
 
 import DataTable from '../components/DataTable';
 import PageLayout from '../components/PageLayout';
 
 import { NAV_LINKS } from '../constants/navLinks';
-import { fetchData } from '../services/apiServices';
-
-const useQuery = () => {
-  const params = new URLSearchParams(useLocation().search);
-  return params.get("id");
-};
+import { getData } from '../services/apiServices';
+import useQuery from '../utils/useQuery';
 
 const SourceDetailPage = () => {
-  const queryId = useQuery();
-  useEffect(() => {
-    fetchData(``);
-  });
+  const initData = {type: '', values: []};
   
-  const rows = [
-    { id: 1, name: 'Phenolic 1' },
-    { id: 2, name: 'Phenolic 2' },
-    { id: 3, name: 'Phenolic 3' },
-    { id: 4, name: 'Phenolic 4' },
-    { id: 5, name: 'Phenolic 5' },
-  ];
+  const [data, setData] = useState({name: ''});
+  const [childrenData, setChildrenData] = useState(initData);
+  const queryId = useQuery();
+  
+  useEffect(() => {
+    (async function fetchData() {
+      const data = await getData(`/sources/${queryId}`);
+      if (data) {
+        setData(data);
+        data.children ? setChildrenData(data.children) : setChildrenData(initData);
+      }
+    })();
+  },[queryId]);
   
   return (
     <PageLayout>
-      <h1>{queryId}</h1>
-      <DataTable header={'Phenolics'} title={queryId} rows={rows} navTo={NAV_LINKS.PHENOLIC_DETAIL} />
+      <h1>{data.name}</h1>
+      <DataTable header={'Phenolics'} rows={childrenData.values} navTo={NAV_LINKS.PHENOLIC_DETAIL} />
     </PageLayout>
   );
 };
