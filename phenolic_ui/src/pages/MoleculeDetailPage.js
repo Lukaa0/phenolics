@@ -1,37 +1,36 @@
-import React, { useEffect } from 'react';
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
 
 import PageLayout from '../components/PageLayout';
 import DataTable from '../components/DataTable';
 
 import { NAV_LINKS } from '../constants/navLinks';
-
-const useQuery = () => {
-  const params = new URLSearchParams(useLocation().search);
-  
-  // TODO After integration with API we should store id and send request to API and from response get name
-  return params.get("name");
-};
+import { getData } from '../services/apiServices';
+import useQuery from '../utils/useQuery';
 
 const MoleculeDetail = () => {
-  const queryId = useQuery();
-  useEffect(() => {
-    console.log(queryId);
-  });
+  const initData = {type: '', values: []};
   
-  const rows = [
-    { id: 1, name: 'Phenolic 1' },
-    { id: 2, name: 'Phenolic 2' },
-    { id: 3, name: 'Phenolic 3' },
-    { id: 4, name: 'Phenolic 4' },
-    { id: 5, name: 'Phenolic 5' },
-  ];
+  const [data, setData] = useState({name: ''});
+  const [parentData, setParentData] = useState(initData);
+  const [childrenData, setChildrenData] = useState(initData);
+  const queryId = useQuery();
+  
+  useEffect(() => {
+    (async function fetchData() {
+      const data = await getData(`/molecules/${queryId}`);
+      if (data) {
+        setData(data);
+        data.parent ? setParentData(data.parent) : setParentData(initData);
+        data.children ? setChildrenData(data.children) : setChildrenData(initData);
+      }
+    })();
+  },[queryId]);
   
   return (
     <div>
       <PageLayout>
-        <h1>{queryId}</h1>
-        <DataTable header={'Phenolics'} title={queryId} rows={rows} navTo={NAV_LINKS.PHENOLIC_DETAIL} />
+        <h1>{data.name}</h1>
+        <DataTable header={'Phenolics'} rows={parentData.values} navTo={NAV_LINKS.PHENOLIC_DETAIL} />
       </PageLayout>
     </div>
   );
