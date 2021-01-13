@@ -37,11 +37,18 @@ public class LambdaRequest {
     }
 
     public Lambda toEntity(Molecule molecule) {
-
         var lambda = new Lambda();
         lambda.setMolecule(molecule);
         lambda.setShoulder(this.shoulder);
         lambda.setWaveLength(this.waveLength);
         return lambda;
+    }
+
+    public LambdaRequest() {}
+
+    public LambdaRequest(Long id, Integer waveLength, Boolean shoulder) {
+        this.id = id;
+        this.shoulder = shoulder;
+        this.waveLength = waveLength;
     }
 }

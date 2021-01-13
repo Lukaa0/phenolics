@@ -15,7 +15,7 @@ public class MoleculeRequest {
 
     private Relative parent;
 
-    private Set<Relative> children;
+    private Relative details;
 
     private Set<Lambda> lambdas;
 
@@ -99,12 +99,12 @@ public class MoleculeRequest {
         this.parent = parent;
     }
 
-    public Set<Relative> getChildren() {
-        return children;
+    public Relative getDetails() {
+        return details;
     }
 
-    public void setChildren(Set<Relative> children) {
-        this.children = children;
+    public void setDetails(Relative details) {
+        this.details = details;
     }
 
     public Integer getEspectroUV() {
@@ -309,4 +309,5 @@ public class MoleculeRequest {
         molecule.setWeight(this.weight);
         return molecule;
     }
+
 }
