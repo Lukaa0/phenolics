@@ -97,31 +97,25 @@ public class MoleculeController {
                 moleculeRequest.setParent(parent);
             }
 
-            var children = new HashSet<Relative>();
-            var childrenLambda = new Relative();
-            var childrenMsFragment = new Relative();
+            var details = new Relative();
+            var detailsLambda = new HashSet<LambdaRequest>();
+            var detailsMsFragment = new HashSet<MSFragmentRequest>();
             if (!molecule.getLambdas().isEmpty()){
-                childrenLambda.setType("lambda");
-                var childrenLambdaValue = new HashSet<Value>();
-                molecule.getLambdas().forEach((moleculeChild) -> {
-                    childrenLambdaValue.add(new Value(moleculeChild.getId(), moleculeChild.getWaveLength(), moleculeChild.getShoulder()));
+                molecule.getLambdas().forEach((moleculeLambda) -> {
+                    detailsLambda.add(new LambdaRequest(moleculeLambda.getId(), moleculeLambda.getWaveLength(), moleculeLambda.getShoulder()));
                 });
-                childrenLambda.setValues(childrenLambdaValue);
-                children.add(childrenLambda);
+                details.setLambdas(detailsLambda);
+                moleculeRequest.setDetails(details);
             }
             if (!molecule.getMsFragments().isEmpty()){
-                childrenMsFragment.setType("msfragment");
-                var childrenMsFragmentValue = new HashSet<Value>();
-                molecule.getMsFragments().forEach((moleculeChil) -> {
-                    childrenMsFragmentValue.add(new Value(moleculeChil.getId(), moleculeChil.getPercentage(), moleculeChil.getValue()));
+                molecule.getMsFragments().forEach((moleculeMsfragment) -> {
+                    detailsMsFragment.add(new MSFragmentRequest(moleculeMsfragment.getId(), moleculeMsfragment.getValue(), moleculeMsfragment.getPercentage()));
                 });
-                childrenMsFragment.setValues(childrenMsFragmentValue);
-                children.add(childrenMsFragment);
+                details.setMsfragments(detailsMsFragment);
+                moleculeRequest.setDetails(details);
             }
 
-            if (!children.isEmpty()){
-                moleculeRequest.setChildren(children);
-            }
+
         }
         return moleculeRequest;
     }
@@ -146,14 +140,11 @@ public class MoleculeController {
 
             moleculeRequestReturn.setId(molecule.getId());
             moleculeRequestReturn.setName(molecule.getName());
-            var childrens = new HashSet<Relative>();
-            var children = new Relative("lambda");
-            var setValue = new HashSet<Value>();
-            var value = new Value(lambdaSaved.getId());
-            setValue.add(value);
-            children.setValues(setValue);
-            childrens.add(children);
-            moleculeRequestReturn.setChildren(childrens);
+            var details = new Relative();
+            var detailsLambda = new HashSet<LambdaRequest>();
+            detailsLambda.add(new LambdaRequest(lambdaSaved.getId(), lambdaSaved.getWaveLength(), lambdaSaved.getShoulder()));
+            details.setLambdas(detailsLambda);
+            moleculeRequestReturn.setDetails(details);
         }
         return moleculeRequestReturn;
     }
@@ -169,16 +160,11 @@ public class MoleculeController {
 
             moleculeRequestReturn.setId(molecule.getId());
             moleculeRequestReturn.setName(molecule.getName());
-            var setChildren = new HashSet<Relative>();
-            var children = new Relative("msfragment");
-            var setValue = new HashSet<Value>();
-            var value = new Value(msFragmentSaved.getId());
-            value.setPercentage(msFragmentRequest.getPercentage());
-            value.setValue(msFragmentRequest.getValue());
-            setValue.add(value);
-            children.setValues(setValue);
-            setChildren.add(children);
-            moleculeRequestReturn.setChildren(setChildren);
+            var details = new Relative();
+            var detailsMsfragment = new HashSet<MSFragmentRequest>();
+            detailsMsfragment.add(new MSFragmentRequest(msFragmentSaved.getId(), msFragmentSaved.getValue(), msFragmentSaved.getPercentage()));
+            details.setMsfragments(detailsMsfragment);
+            moleculeRequestReturn.setDetails(details);
         }
         return moleculeRequestReturn;
     }

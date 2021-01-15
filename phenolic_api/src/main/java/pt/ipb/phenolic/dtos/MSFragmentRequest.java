@@ -43,4 +43,12 @@ public class MSFragmentRequest {
         msFragment.setValue(this.value);
         return msFragment;
     }
+
+    public MSFragmentRequest() {}
+
+    public MSFragmentRequest(Long id, Integer value, Integer percentage) {
+        this.id = id;
+        this.percentage = percentage;
+        this.value = value;
+    }
 }
