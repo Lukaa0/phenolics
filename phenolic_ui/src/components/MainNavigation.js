@@ -15,7 +15,6 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
 import { NavLink } from "react-router-dom";
 
 import { NAV_LINKS } from "../constants/navLinks";
@@ -139,7 +138,6 @@ const MainNavigation = (props) => {
           <NavLink to={`/${NAV_LINKS.SOURCE_LIST}`}>
             <ListItem button>
               <ListItemIcon>
-                <InboxIcon />
               </ListItemIcon>
               <ListItemText primary={"Sources"} />
             </ListItem>
@@ -147,7 +145,6 @@ const MainNavigation = (props) => {
           <NavLink to={`/${NAV_LINKS.PHENOLIC_LIST}`}>
             <ListItem button>
               <ListItemIcon>
-                <InboxIcon />
               </ListItemIcon>
               <ListItemText primary={"Phenolics"} />
             </ListItem>
@@ -155,7 +152,6 @@ const MainNavigation = (props) => {
           <NavLink to={`/${NAV_LINKS.MOLECULE_LIST}`}>
             <ListItem button>
               <ListItemIcon>
-                <InboxIcon />
               </ListItemIcon>
               <ListItemText primary="Molecules" />
             </ListItem>
